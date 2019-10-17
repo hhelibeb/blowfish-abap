@@ -1,7 +1,7 @@
 # blowfish-abap
 Blowfish encryption in ABAP
 
-ABAP Version: 740 or higher
+ABAP Version: 750 or higher
 
 Blowfish encryption (ECB and CBC MODE) as defined by Bruce Schneier here: http://www.schneier.com/paper-blowfish-fse.html
 
@@ -19,3 +19,4 @@ The blowfish-abap is implemented with reference to [C#](https://www.schneier.com
 ## TODO
 - [ ] Exceptions
 - [ ] Tests
+- [ ] Support for ABAP 740
