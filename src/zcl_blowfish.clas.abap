@@ -936,14 +936,14 @@ CLASS ZCL_BLOWFISH IMPLEMENTATION.
 
     DATA: swap TYPE REF TO data.
 
-    FIELD-SYMBOLS: <fs> TYPE any.
+    FIELD-SYMBOLS: <swap> TYPE any.
 
     DATA(line_type) = CAST cl_abap_tabledescr(
       cl_abap_typedescr=>describe_by_data( itab ) )->get_table_line_type( ).
 
     CREATE DATA swap TYPE HANDLE line_type.
 
-    ASSIGN swap->* TO <fs>.
+    ASSIGN swap->* TO <swap>.
 
     DATA(left)  = 1.
     DATA(right) = lines( itab ).
@@ -953,9 +953,9 @@ CLASS ZCL_BLOWFISH IMPLEMENTATION.
       READ TABLE itab INDEX left ASSIGNING FIELD-SYMBOL(<left>).
       READ TABLE itab INDEX right ASSIGNING FIELD-SYMBOL(<right>).
 
-      <fs>    = <left>.
+      <swap>  = <left>.
       <left>  = <right>.
-      <right> = <fs>.
+      <right> = <swap>.
 
       left  = left + 1.
       right = right - 1.
@@ -986,25 +986,25 @@ CLASS ZCL_BLOWFISH IMPLEMENTATION.
 
   METHOD word_byte1.
     b = round(
-    val  = CONV p1( word / 256 / 256 MOD 256 )
-    dec  = 0
-    mode = cl_abap_math=>round_down ).
+      val  = CONV p1( word / 256 / 256 MOD 256 )
+      dec  = 0
+      mode = cl_abap_math=>round_down ).
   ENDMETHOD.
 
 
   METHOD word_byte2.
     b = round(
-    val  = CONV p1( word / 256 MOD 256 )
-    dec  = 0
-    mode = cl_abap_math=>round_down ).
+      val  = CONV p1( word / 256 MOD 256 )
+      dec  = 0
+      mode = cl_abap_math=>round_down ).
   ENDMETHOD.
 
 
   METHOD word_byte3.
     b = round(
-    val  = CONV p1( word MOD 256 )
-    dec  = 0
-    mode = cl_abap_math=>round_down ).
+      val  = CONV p1( word MOD 256 )
+      dec  = 0
+      mode = cl_abap_math=>round_down ).
   ENDMETHOD.
 
 
