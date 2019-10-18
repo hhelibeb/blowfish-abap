@@ -1,16 +1,17 @@
 CLASS zcl_blowfish DEFINITION
   PUBLIC
   FINAL
-  CREATE PUBLIC.
+  CREATE PUBLIC .
 
   PUBLIC SECTION.
 
+
     TYPES: ty_byte_t TYPE STANDARD TABLE OF x WITH EMPTY KEY.
 
-    METHODS: set_iv IMPORTING !iv TYPE ty_byte_t.
-    METHODS: get_iv EXPORTING !iv TYPE ty_byte_t.
-
     DATA: non_standard_method TYPE abap_bool.
+
+    METHODS: constructor IMPORTING !hexkey TYPE xstring
+                         RAISING   cx_me_illegal_argument.
 
     METHODS: decrypt_cbc IMPORTING !cipher_text      TYPE string
                          RETURNING VALUE(plain_text) TYPE string.
@@ -21,7 +22,9 @@ CLASS zcl_blowfish DEFINITION
     METHODS: encrypt_ecb IMPORTING !plain_text        TYPE string
                          RETURNING VALUE(cipher_text) TYPE string.
 
-    METHODS: constructor IMPORTING hexkey TYPE xstring.
+    METHODS: set_iv IMPORTING !iv TYPE ty_byte_t
+                    RAISING   cx_me_illegal_argument.
+    METHODS: get_iv RETURNING VALUE(iv) TYPE ty_byte_t.
 
   PRIVATE SECTION.
 
@@ -53,8 +56,9 @@ CLASS zcl_blowfish DEFINITION
     METHODS: setup_s2 RETURNING VALUE(s2) TYPE ty_sblock_t.
     METHODS: setup_s3 RETURNING VALUE(s3) TYPE ty_sblock_t.
 
-    METHODS: hex_to_byte  IMPORTING !hex            TYPE xstring
-                          RETURNING VALUE(byte_tab) TYPE ty_byte_t.
+    METHODS: hex_to_byte IMPORTING !hex            TYPE xstring
+                         RETURNING VALUE(byte_tab) TYPE ty_byte_t.
+
     METHODS: byte_to_hex IMPORTING !byte_tab  TYPE ty_byte_t
                          RETURNING VALUE(hex) TYPE xstring.
 
@@ -138,7 +142,18 @@ CLASS ZCL_BLOWFISH IMPLEMENTATION.
 
 
   METHOD constructor.
+
+    DATA(key_len) = xstrlen( hexkey ).
+
+    IF key_len = 0 OR key_len > 56. "448bits.
+      RAISE EXCEPTION TYPE cx_me_illegal_argument
+        EXPORTING
+          name  = 'HEXKEY'
+          value = 'Incorrect key length'.
+    ENDIF.
+
     setup_key( EXPORTING cipher_key = hex_to_byte( hexkey ) ).
+
   ENDMETHOD.
 
 
@@ -549,7 +564,7 @@ CLASS ZCL_BLOWFISH IMPLEMENTATION.
 
   METHOD setup_key.
 
-    bf_p = setup_p( ).
+    bf_p  = setup_p( ).
     bf_s0 = setup_s0( ).
     bf_s1 = setup_s1( ).
     bf_s2 = setup_s2( ).
@@ -558,10 +573,6 @@ CLASS ZCL_BLOWFISH IMPLEMENTATION.
     DATA: key TYPE ty_byte_t.
 
     DATA(key_len) = lines( cipher_key ).
-
-    IF key_len = 0 OR key_len > 56. "448bits
-      RETURN.
-    ENDIF.
 
     key = cipher_key.
 
@@ -619,7 +630,6 @@ CLASS ZCL_BLOWFISH IMPLEMENTATION.
       bf_s3[ p_index + 1 ] = xr_par.
       p_index = p_index + 2.
     ENDWHILE.
-
 
   ENDMETHOD.
 
@@ -879,7 +889,10 @@ CLASS ZCL_BLOWFISH IMPLEMENTATION.
 
   METHOD set_iv.
     IF lines( iv ) <> 8.
-      RETURN.
+      RAISE EXCEPTION TYPE cx_me_illegal_argument
+        EXPORTING
+          name  = 'IV'
+          value = 'Incorrect IV length'.
     ENDIF.
     init_vector = iv.
     iv_set      = abap_true.
@@ -892,9 +905,30 @@ CLASS ZCL_BLOWFISH IMPLEMENTATION.
 
     CALL FUNCTION 'GENERATE_SEC_RANDOM'
       EXPORTING
-        length = 8
+        length         = 8
       IMPORTING
-        random = random.
+        random         = random
+      EXCEPTIONS
+        invalid_length = 1
+        no_memory      = 2
+        internal_error = 3
+        OTHERS         = 4.
+    IF sy-subrc = 1.
+      CALL FUNCTION 'GENERATE_SEC_RANDOM'
+        EXPORTING
+          length         = 16
+        IMPORTING
+          random         = random
+        EXCEPTIONS
+          invalid_length = 1
+          no_memory      = 2
+          internal_error = 3
+          OTHERS         = 4.
+      IF sy-subrc = 0.
+        DATA(random_string) = CONV string( random ).
+        random = random_string(16).
+      ENDIF.
+    ENDIF.
 
     init_vector = hex_to_byte( random ).
     iv_set = abap_true.
