@@ -17,6 +17,6 @@ The blowfish-abap is implemented with reference to [C#](https://www.schneier.com
     cl_demo_output=>display( plain && cl_abap_char_utilities=>newline && cipher ).
 
 ## TODO
-- [ ] Exceptions
+- [x] Exceptions
 - [ ] Tests
 - [ ] Support for ABAP 740
