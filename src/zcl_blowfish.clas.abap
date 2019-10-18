@@ -581,7 +581,7 @@ CLASS ZCL_BLOWFISH IMPLEMENTATION.
 
     DO 18 TIMES.
 
-      DATA(d) = CONV xstring( ( ( key[ j MOD key_len + 1 ] * 256 + key[ ( j + 1 ) MOD key_len + 1 ] ) * 256 + key[ ( j + 2 ) MOD key_len + 1 ] ) * 256 + key[ ( j + 3 ) MOD key_len + 1 ] ).
+      DATA(d) = CONV xstring( ( ( conv int8( key[ j MOD key_len + 1 ] ) * 256 + key[ ( j + 1 ) MOD key_len + 1 ] ) * 256 + key[ ( j + 2 ) MOD key_len + 1 ] ) * 256 + key[ ( j + 3 ) MOD key_len + 1 ] ).
       bf_p[ p_index ] = bf_p[ p_index ] BIT-XOR d.
       j = ( j + 4 ) MOD key_len.
       p_index = p_index + 1.
