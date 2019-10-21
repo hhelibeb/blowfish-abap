@@ -18,5 +18,5 @@ The blowfish-abap is implemented with reference to [C#](https://www.schneier.com
 
 ## TODO
 - [x] Exceptions
-- [ ] Tests
+- [x] Tests
 - [ ] Support for ABAP 740
