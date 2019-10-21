@@ -5,7 +5,6 @@ CLASS zcl_blowfish DEFINITION
 
   PUBLIC SECTION.
 
-
     TYPES: ty_byte_t TYPE STANDARD TABLE OF x WITH EMPTY KEY.
 
     DATA: non_standard_method TYPE abap_bool.
@@ -26,9 +25,10 @@ CLASS zcl_blowfish DEFINITION
                     RAISING   cx_me_illegal_argument.
     METHODS: get_iv RETURNING VALUE(iv) TYPE ty_byte_t.
 
+  PROTECTED SECTION.
   PRIVATE SECTION.
 
-    TYPES: p1 TYPE p LENGTH 16 DECIMALS 5.
+    TYPES: p1 TYPE p LENGTH 16 DECIMALS 7.
     TYPES: ty_string_t TYPE string_table.
     TYPES: ty_sblock_t TYPE xstring_table.
 
@@ -581,7 +581,7 @@ CLASS ZCL_BLOWFISH IMPLEMENTATION.
 
     DO 18 TIMES.
 
-      DATA(d) = CONV xstring( ( ( conv int8( key[ j MOD key_len + 1 ] ) * 256 + key[ ( j + 1 ) MOD key_len + 1 ] ) * 256 + key[ ( j + 2 ) MOD key_len + 1 ] ) * 256 + key[ ( j + 3 ) MOD key_len + 1 ] ).
+      DATA(d) = CONV xstring( ( ( CONV int8( key[ j MOD key_len + 1 ] ) * 256 + key[ ( j + 1 ) MOD key_len + 1 ] ) * 256 + key[ ( j + 2 ) MOD key_len + 1 ] ) * 256 + key[ ( j + 3 ) MOD key_len + 1 ] ).
       bf_p[ p_index ] = bf_p[ p_index ] BIT-XOR d.
       j = ( j + 4 ) MOD key_len.
       p_index = p_index + 1.
@@ -1001,12 +1001,21 @@ CLASS ZCL_BLOWFISH IMPLEMENTATION.
 
   METHOD to_int32.
 
-    IF xstrlen( xdata ) > 4.
+    DATA(xlen) = xstrlen( xdata ).
+
+    IF xlen > 4.
       DATA(offset) = xstrlen( xdata ) - 4.
       int32 = xdata+offset(4).
+    ELSEIF xlen < 4.
+      DATA(temp) = CONV string( xdata ).
+      DO 4 - xlen TIMES.
+        temp = `00` && temp.
+      ENDDO.
+      int32 = temp.
     ELSE.
       int32 = xdata.
     ENDIF.
+
   ENDMETHOD.
 
 
