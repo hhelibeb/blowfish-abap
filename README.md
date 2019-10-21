@@ -8,7 +8,7 @@ Blowfish encryption (ECB and CBC MODE) as defined by Bruce Schneier here: http:/
 The blowfish-abap is implemented with reference to [C#](https://www.schneier.com/code/blowfish.cs) source code.
 
 ## Usage
-    DATA(blowfish) = NEW zcl_blowfish( conv #( '04B915BA43FEB5B6' ) ).
+    DATA(blowfish) = NEW zcl_blowfish( CONV #( '04B915BA43FEB5B6' ) ).
     
     DATA(plain)  = 'The quick brown fox jumped over the lazy dog.'.
     DATA(cipher) = blowfish->encrypt_cbc( CONV #( plain ) ).
