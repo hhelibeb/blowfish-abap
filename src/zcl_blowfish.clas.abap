@@ -104,7 +104,7 @@ CLASS zcl_blowfish DEFINITION
                                  !decrypt          TYPE abap_bool
                        RETURNING VALUE(plain_text) TYPE ty_byte_t.
 
-    METHODS: to_int32 IMPORTING !xdata       TYPE xstring
+    METHODS: to_int4 IMPORTING !xdata       TYPE xstring
                       RETURNING VALUE(int32) TYPE xstring.
 
 ENDCLASS.
@@ -552,9 +552,9 @@ CLASS ZCL_BLOWFISH IMPLEMENTATION.
           x4 TYPE xstring.
 
 
-    x1 = to_int32( CONV #( CONV int8( bf_s0[ word_byte0( b ) + 1 ] + bf_s1[ word_byte1( b ) + 1 ] ) ) ) .
+    x1 = to_int4( CONV #( CONV int8( bf_s0[ word_byte0( b ) + 1 ] + bf_s1[ word_byte1( b ) + 1 ] ) ) ) .
     x2 = x1 BIT-XOR bf_s2[ word_byte2( b ) + 1 ].
-    x3 = to_int32( CONV #( CONV int8( x2 + bf_s3[ word_byte3( b ) + 1 ] ) ) ).
+    x3 = to_int4( CONV #( CONV int8( x2 + bf_s3[ word_byte3( b ) + 1 ] ) ) ).
     x4 = x3 BIT-XOR bf_p[ n ].
 
     r  = x4 BIT-XOR a.
@@ -999,7 +999,7 @@ CLASS ZCL_BLOWFISH IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD to_int32.
+  METHOD to_int4.
 
     DATA(xlen) = xstrlen( xdata ).
 
