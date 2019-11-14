@@ -396,7 +396,7 @@ CLASS ZCL_BLOWFISH IMPLEMENTATION.
       IMPORTING
         ex_string   = plain_text
       EXCEPTIONS
-        other       = 2.
+        others      = 2.
 
   ENDMETHOD.
 
@@ -416,7 +416,7 @@ CLASS ZCL_BLOWFISH IMPLEMENTATION.
       IMPORTING
         ex_string   = plain_text
       EXCEPTIONS
-        other       = 2.
+        others      = 2.
 
   ENDMETHOD.
 
